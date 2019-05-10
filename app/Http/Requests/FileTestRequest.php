@@ -25,7 +25,7 @@ class FileTestRequest extends FormRequest
     public function rules()
     {
         return [
-            'random' => [new TestContainerInstance()]
+            'random' => ['required', 'string', 'max:45', new TestContainerInstance()]
         ];
     }
 }

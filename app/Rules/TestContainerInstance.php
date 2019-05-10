@@ -29,9 +29,9 @@ class TestContainerInstance implements Rule
     {
         try
         {
-            $random = $request->input('random');
+            $random = request()->input('random');
 
-            $test = app(Filelink::class)->getMetaData()['size'] == $random;
+            $test = app(Filelink::class, ['handle' => $random])->getMetaData()['size'] == $random;
         } catch (\Exception $e)
         {
             $test = false;

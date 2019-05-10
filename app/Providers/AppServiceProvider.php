@@ -17,10 +17,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(File::class, function (Application $app, array $parameters)
-        {
-            return new File();
-        });
+        $this->registerFilestackSdk();
     }
 
     /**
@@ -31,5 +28,27 @@ class AppServiceProvider extends ServiceProvider
     public function boot(Factory $validator)
     {
         //
+    }
+
+    /**
+     * Register les class sdk filestack
+     */
+    private function registerFilestackSdk()
+    {
+        //FilestackSecurity
+        $this->app->singleton(FilestackSecurity::class, function (Application $app, array $parameters)
+        {
+            return new FilestackSecurity('');
+        });
+        // FilestackClient
+        $this->app->singleton(FilestackClient::class, function (Application $app, array $parameters)
+        {
+            return new FilestackClient('', app(FilestackSecurity::class));
+        });
+        // Filelink
+        $this->app->singleton(Filelink::class, function (Application $app, array $parameters)
+        {
+            return new Filelink($parameters['handle'], '', app(FilestackSecurity::class));
+        });
     }
 }
