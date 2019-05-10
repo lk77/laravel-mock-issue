@@ -36,4 +36,24 @@ class MockFilelinkTest extends TestCase
 
         $this->assertSame('true', $response->getContent());
     }
+
+    /**
+     * Test that instance isnt mocked
+     *
+     * @return void
+     */
+    public function test_instance_mock_with_offset_set()
+    {
+        $random = Str::random(32);
+
+        App::offsetSet(Filelink::class, $this->mock(Filelink::class, function ($mock) use ($random) {
+            $mock->shouldReceive('getMetaData')->andReturn(['size' => $random]);
+        }));
+
+        $this->assertTrue(app(Filelink::class)->getMetaData()['size'] === $random);
+
+        $response = $this->postJson("/file", ['random' => $random]);
+
+        $this->assertSame('true', $response->getContent());
+    }
 }
