@@ -18,11 +18,13 @@ class MockFilelinkTest extends TestCase
     use DatabaseTransactions;
 
     /**
-     * Test that instance isnt mocked
+     * Test that instance is mocked with $this->mock
+     *
+     * @testdox We are testing that the instance is mocked when using $this->mock
      *
      * @return void
      */
-    public function test_instance_mock()
+    public function test_instance_mock_with_this_mock()
     {
         $random = Str::random(32);
 
@@ -38,11 +40,13 @@ class MockFilelinkTest extends TestCase
     }
 
     /**
-     * Test that instance isnt mocked
+     * Test that instance is mocked with App::offsetSet
+     *
+     * @testdox We are testing that the instance is mocked when using App::offsetSet
      *
      * @return void
      */
-    public function test_instance_mock_with_offset_set()
+    public function test_instance_mock_with_app_offset_set()
     {
         $random = Str::random(32);
 
@@ -55,5 +59,67 @@ class MockFilelinkTest extends TestCase
         $response = $this->postJson("/file", ['random' => $random]);
 
         $this->assertSame('true', $response->getContent());
+    }
+
+    /**
+     * Test that instance is mocked with app instance
+     *
+     * @testdox We are testing that the instance is mocked when using $this->app->instance
+     *
+     * @return void
+     */
+    public function test_instance_mock_with_app_instance()
+    {
+        $random = Str::random(32);
+
+        $this->app->instance(Filelink::class, $this->mock(Filelink::class, function ($mock) use ($random) {
+            $mock->shouldReceive('getMetaData')->andReturn(['size' => $random]);
+        }));
+
+        $this->assertTrue(app(Filelink::class)->getMetaData()['size'] === $random);
+
+        $response = $this->postJson("/file", ['random' => $random]);
+
+        $this->assertSame('true', $response->getContent());
+    }
+
+    /**
+     * Test that instance is mocked with make with
+     *
+     * @testdox We are testing that the instance is mocked when using $this->mock and $this->app->makeWith
+     *
+     * @return void
+     */
+    public function test_instance_mock_with_this_mock_and_app_make_with()
+    {
+        $random = Str::random(32);
+
+        $this->mock(Filelink::class, function ($mock) use ($random) {
+            $mock->shouldReceive('getMetaData')->andReturn(['size' => $random]);
+        });
+
+        $instance = $this->app->makeWith(Filelink::class, ['handle' => $random]);
+
+        $this->assertTrue($instance->getMetaData()['size'] === $random);
+    }
+
+    /**
+     * Test that instance is mocked with make
+     *
+     * @testdox We are testing that the instance is mocked when using $this->mock and $this->app->make
+     *
+     * @return void
+     */
+    public function test_instance_mock_with_this_mock_and_app_make()
+    {
+        $random = Str::random(32);
+
+        $this->mock(Filelink::class, function ($mock) use ($random) {
+            $mock->shouldReceive('getMetaData')->andReturn(['size' => $random]);
+        });
+
+        $instance = $this->app->make(Filelink::class);
+
+        $this->assertTrue($instance->getMetaData()['size'] === $random);
     }
 }

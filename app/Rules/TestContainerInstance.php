@@ -27,7 +27,6 @@ class TestContainerInstance implements Rule
      */
     public function passes($attribute, $random)
     {
-        return true;
         try
         {
             $random = request()->input('random');
